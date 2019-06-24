@@ -53,6 +53,14 @@ config_read()
 
 config_write()
 {
+  if ! case $1 in https://*) ;; *) false;; esac; then
+    error "bad api uri"
+  fi
+
+  if [ "${#2}" -ne 39 ]; then
+    error "bad api key"
+  fi
+
   if ! printf "HEARTBEAT_URL=$1\nHEARTBEAT_KEY=$2\n" > $__CONFIG__; then
     error "failed to write configuration file"
   fi
@@ -84,16 +92,8 @@ do_configure()
     echo "Type the api uri (ex: https://heartbeat.example.com), followed by [ENTER]:"
     read hb_url
 
-    if ! case $hb_url in https://*) ;; *) false;; esac; then
-      error "bad api uri"
-    fi
-
     echo "Type the api key (XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX), followed by [ENTER]:"
     read hb_key
-
-    if [ "${#hb_key}" -ne 39 ]; then
-      error "bad api key"
-    fi
 
     config_write "$hb_url" "$hb_key"
   elif [ "$#" -eq 2 ]; then
