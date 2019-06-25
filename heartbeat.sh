@@ -15,7 +15,7 @@ Heartbeat api client.
 
 COMMANDS :
 
-   check        Check API connection
+   check        Check api configuration
    configure    Configure client
    update       Update device service status
 
@@ -44,6 +44,10 @@ config_read()
     fi
 
     source $__CONFIG__
+  fi
+
+  if [ -z "$HEARTBEAT_CURL_MAXTIME" ]; then
+    HEARTBEAT_CURL_MAXTIME=5
   fi
 
   if [ -z "$HEARTBEAT_URL" -o -z "$HEARTBEAT_KEY" ]; then
@@ -114,7 +118,12 @@ do_check()
   check_cmd curl
   config_read
 
-  if curl -sfL --post301 --post302 --post303 "$HEARTBEAT_URL/api/status/check" -X POST -H "Content-Type: application/json" --data "$(data_check)" &>/dev/null; then
+  if curl -sfL --post301 --post302 --post303 \
+    --max-time $HEARTBEAT_CURL_MAXTIME \
+    -X POST -H "Content-Type: application/json" \
+    --data "$(data_check)" \
+    "$HEARTBEAT_URL/api/status/check" &>/dev/null
+  then
     echo "api check has succeeded"
   else
     error "api check has failed"
@@ -130,11 +139,16 @@ do_update()
   check_cmd curl
   config_read
 
-  if curl -sfL --post301 --post302 --post303 "$HEARTBEAT_URL/api/status" -X POST -H "Content-Type: application/json" --data "$(data_status $@)" &>/dev/null; then
-    echo "api check has succeeded"
+  if curl -sfL --post301 --post302 --post303 \
+    --max-time $HEARTBEAT_CURL_MAXTIME \
+    -X POST -H "Content-Type: application/json" \
+    --data "$(data_status $@)" \
+    "$HEARTBEAT_URL/api/status" &>/dev/null
+  then
+    echo "status update has succeeded"
     exit 0
   else
-    error "api status has failed"
+    error "status update has failed"
   fi
 }
 
