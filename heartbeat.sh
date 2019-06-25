@@ -53,17 +53,13 @@ config_read()
   if [ -z "$HEARTBEAT_URL" -o -z "$HEARTBEAT_KEY" ]; then
     error "failed to read configuration"
   fi
+
+  config_validate $HEARTBEAT_URL $HEARTBEAT_KEY
 }
 
 config_write()
 {
-  if ! case $1 in https://*) ;; *) false;; esac; then
-    error "bad api uri"
-  fi
-
-  if [ "${#2}" -ne 39 ]; then
-    error "bad api key"
-  fi
+  config_validate $1 $2
 
   if ! printf "HEARTBEAT_URL=$1\nHEARTBEAT_KEY=$2\n" > $__CONFIG__; then
     error "failed to write configuration file"
@@ -74,6 +70,17 @@ config_write()
   fi
 
   echo "configuration writed in $__CONFIG__"
+}
+
+config_validate()
+{
+  if ! case $1 in https://*) ;; *) false;; esac; then
+    error "configured URL is invalid"
+  fi
+
+  if [ "${#2}" -ne 39 ]; then
+    error "configured KEY is invalid"
+  fi
 }
 
 data_check()
