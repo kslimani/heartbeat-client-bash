@@ -100,7 +100,7 @@ EOF
 do_configure()
 {
   if [ "$#" -eq 0 ]; then
-    echo "Type the api uri (ex: https://heartbeat.example.com), followed by [ENTER]:"
+    echo "Type the api base url (ex: https://heartbeat.example.com), followed by [ENTER]:"
     read hb_url
 
     echo "Type the api key (XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX), followed by [ENTER]:"
