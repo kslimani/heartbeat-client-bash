@@ -5,6 +5,7 @@
 
 __NAME__=$(basename "$0")
 __CONFIG__="$HOME/.heartbeat"
+__CURL_OPTS__="-sfL --post301 --post302 --post303"
 
 usage()
 {
@@ -125,7 +126,7 @@ do_check()
   check_cmd curl
   config_read
 
-  if curl -sfL --post301 --post302 --post303 \
+  if curl $__CURL_OPTS__ \
     --max-time $HEARTBEAT_CURL_MAXTIME \
     -X POST -H "Content-Type: application/json" \
     --data "$(data_check)" \
@@ -146,7 +147,7 @@ do_update()
   check_cmd curl
   config_read
 
-  if curl -sfL --post301 --post302 --post303 \
+  if curl $__CURL_OPTS__ \
     --max-time $HEARTBEAT_CURL_MAXTIME \
     -X POST -H "Content-Type: application/json" \
     --data "$(data_status $@)" \
