@@ -62,7 +62,7 @@ config_write()
 {
   config_validate $1 $2
 
-  if ! printf "HEARTBEAT_URL=$1\nHEARTBEAT_KEY=$2\n" > $__CONFIG__; then
+  if ! printf "HEARTBEAT_URL=\"$1\"\nHEARTBEAT_KEY=\"$2\"\n" > $__CONFIG__; then
     error "failed to write configuration file"
   fi
 
